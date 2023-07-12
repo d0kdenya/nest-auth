@@ -1,6 +1,6 @@
 import { ForbiddenException, Inject, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { Role, User } from '@prisma/client';
+import { Provider, Role, User } from '@prisma/client';
 import { genSalt, hash } from 'bcrypt';
 import { JwtPayload } from '../auth/interfaces/tokens.interface';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
@@ -21,8 +21,9 @@ export class UserService {
     return this.prismaService.user.create({
       data: {
         email: user.email,
-        password: await this.hashPassword(user.password),
-        roles: ['USER']
+        password: user?.password ? await this.hashPassword(user.password) : null,
+        roles: ['USER'],
+        provider: user.provider
       }
     })
   }
