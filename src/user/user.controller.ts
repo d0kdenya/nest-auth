@@ -6,17 +6,27 @@ import {
   Get,
   Param,
   ParseUUIDPipe,
-  Post,
+  Post, UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UserResponse } from './responses/user.response';
 import { CurrentUser } from '@common/decorators/current-user.decorator';
 import { JwtPayload } from '../auth/interfaces/tokens.interface';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '@common/decorators/roles.decorator';
+import { Role } from '@prisma/client';
 
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
+
+  @UseGuards(RolesGuard)
+  @Roles(Role.ADMIN)
+  @Get()
+  async me (@CurrentUser() user: JwtPayload) {
+    return user
+  }
 
   @UseInterceptors(ClassSerializerInterceptor)
   @Get(':idOrEmail')
