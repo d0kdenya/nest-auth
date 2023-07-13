@@ -8,6 +8,7 @@ import { options } from './config/jwt.module.async.options';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { GoogleStrategy } from './strategies/google.startegy';
 import { HttpModule } from '@nestjs/axios';
+import { YandexStrategy } from './strategies/yandex.strategy';
 
 @Module({
   imports: [
@@ -17,6 +18,6 @@ import { HttpModule } from '@nestjs/axios';
     HttpModule
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, GoogleStrategy]
+  providers: [AuthService, JwtStrategy, GoogleStrategy, YandexStrategy]
 })
 export class AuthModule {}

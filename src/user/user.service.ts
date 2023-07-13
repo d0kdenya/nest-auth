@@ -18,14 +18,27 @@ export class UserService {
   ) {}
 
   async save(user: Partial<User>) {
-    return this.prismaService.user.create({
-      data: {
+    const savedUser = await this.prismaService.user.upsert({
+      where: {
+        email: user.email
+      },
+      update: {
+        password: user?.password ? await this.hashPassword(user.password) : null,
+        provider: user?.provider,
+        roles: user.roles
+      },
+      create: {
         email: user.email,
         password: user?.password ? await this.hashPassword(user.password) : null,
-        roles: ['USER'],
-        provider: user.provider
+        provider: user?.provider,
+        roles: ['USER']
       }
     })
+    await Promise.all([
+      await this.cacheManager.set(savedUser.id, savedUser),
+      await this.cacheManager.set(savedUser.email, savedUser)
+    ])
+    return savedUser
   }
 
   async findOne(idOrEmail: string, isReset = false) {
