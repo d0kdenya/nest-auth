@@ -16,6 +16,9 @@ export class UserResponse implements User {
   @Exclude()
   provider: Provider
 
+  @Exclude()
+  isBlocked: boolean
+
   constructor(user: User) {
     Object.assign(this, user)
   }

@@ -23,9 +23,10 @@ export class UserService {
         email: user.email
       },
       update: {
-        password: user?.password ? await this.hashPassword(user.password) : null,
-        provider: user?.provider,
-        roles: user.roles
+        password: user?.password ? await this.hashPassword(user.password) : null ?? undefined,
+        provider: user?.provider ?? undefined,
+        roles: user?.roles ?? undefined,
+        isBlocked: user?.isBlocked ?? undefined
       },
       create: {
         email: user.email,
@@ -41,7 +42,7 @@ export class UserService {
     return savedUser
   }
 
-  async findOne(idOrEmail: string, isReset = false) {
+  async findOne(idOrEmail: string, isReset = false): Promise<User> {
     if (isReset) {
       await this.cacheManager.del(idOrEmail)
     }
